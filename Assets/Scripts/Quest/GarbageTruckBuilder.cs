@@ -101,8 +101,8 @@ public class GarbageTruckBuilder : MonoBehaviour
     
     void Start()
     {
-        // Auto-build jika belum ada children
-        if (transform.childCount == 0)
+        // Auto-build jika belum ada Cabin (truck belum di-build)
+        if (transform.Find("Cabin") == null)
         {
             BuildTruck();
         }
