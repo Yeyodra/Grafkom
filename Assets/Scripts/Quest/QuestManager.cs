@@ -39,6 +39,7 @@ public class QuestManager : MonoBehaviour
     
     [Header("Cutscene")]
     public QuestCutscene questCutscene;
+    public Quest2Cutscene quest2Cutscene;
 
     
     private Quest activeQuest;
@@ -204,7 +205,8 @@ void UpdateUI()
         {
             if (activeQuest.questType == QuestType.Collection)
             {
-                questProgressText.text = $"{activeQuest.currentCount}/{activeQuest.targetCount} terkumpul";
+                // Quest 2: track sampah yang dibuang ke truck, bukan yang dikumpulkan
+                questProgressText.text = $"{activeQuest.currentCount}/{activeQuest.targetCount} sampah dibuang";
             }
             else if (activeQuest.questType == QuestType.Delivery)
             {
@@ -288,6 +290,36 @@ public void TriggerDeliveryCutscene()
         Debug.Log($"Trash delivered: {activeQuest.currentCount}/{activeQuest.targetCount}");
         
         if (activeQuest.IsCompleted)
+        {
+            // Trigger ending cutscene instead of direct complete
+            TriggerQuest2Cutscene();
+        }
+    }
+    
+    public void TriggerQuest2Cutscene()
+    {
+        // Find Quest2Cutscene if not assigned
+        if (quest2Cutscene == null)
+        {
+            quest2Cutscene = FindFirstObjectByType<Quest2Cutscene>();
+        }
+        
+        if (quest2Cutscene != null && !quest2Cutscene.IsPlaying)
+        {
+            quest2Cutscene.PlayEndingCutscene();
+            // CompleteQuest will be called after cutscene via delay
+            Invoke(nameof(CompleteQuest2), 8f); // Delay to match cutscene duration
+        }
+        else
+        {
+            // No cutscene, just complete
+            CompleteQuest();
+        }
+    }
+    
+    void CompleteQuest2()
+    {
+        if (activeQuest != null && activeQuest.questId == "collect_trash")
         {
             CompleteQuest();
         }
