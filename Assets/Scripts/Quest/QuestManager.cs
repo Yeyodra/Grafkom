@@ -270,10 +270,26 @@ public void TriggerDeliveryCutscene()
     
     public void UpdateAllNPCIndicators()
     {
-        NPCDialogue[] npcs = FindObjectsOfType<NPCDialogue>();
+        NPCDialogue[] npcs = FindObjectsByType<NPCDialogue>(FindObjectsSortMode.None);
         foreach (var npc in npcs)
         {
             npc.UpdateIndicatorState();
+        }
+    }
+
+    // Method untuk Quest 2 - track trash yang dibuang ke truck
+    public void OnTrashDelivered(int count)
+    {
+        if (activeQuest == null) return;
+        if (activeQuest.questId != "collect_trash") return;
+        
+        activeQuest.currentCount += count;
+        UpdateUI();
+        Debug.Log($"Trash delivered: {activeQuest.currentCount}/{activeQuest.targetCount}");
+        
+        if (activeQuest.IsCompleted)
+        {
+            CompleteQuest();
         }
     }
 

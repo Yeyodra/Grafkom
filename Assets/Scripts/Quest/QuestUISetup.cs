@@ -16,7 +16,7 @@ public class QuestUISetup : MonoBehaviour
     [ContextMenu("Setup Quest UI")]
     public void SetupQuestUI()
     {
-        QuestManager questManager = FindObjectOfType<QuestManager>();
+        QuestManager questManager = FindFirstObjectByType<QuestManager>();
         if (questManager == null)
         {
             Debug.LogError("QuestManager not found in scene!");

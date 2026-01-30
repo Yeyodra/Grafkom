@@ -40,7 +40,8 @@ public class Quest2Setup : MonoBehaviour
             if (amongUs != null)
             {
                 amongUs.bodyColor = npcColor;
-                amongUs.ApplyColor(); // Apply warna
+                amongUs.backpackColor = npcColor * 0.75f;
+                amongUs.GenerateAmongUsModel(); // Regenerate dengan warna baru
                 Debug.Log("NPC Petugas Kebersihan warna set ke hijau");
             }
             
@@ -81,7 +82,7 @@ public class Quest2Setup : MonoBehaviour
     public void StartQuest2()
     {
         // Show inventory UI
-        InventoryUI inventoryUI = FindObjectOfType<InventoryUI>();
+        InventoryUI inventoryUI = FindFirstObjectByType<InventoryUI>();
         if (inventoryUI != null)
         {
             inventoryUI.Show();
@@ -90,7 +91,7 @@ public class Quest2Setup : MonoBehaviour
         // Spawn trash
         if (trashSpawner == null)
         {
-            trashSpawner = FindObjectOfType<TrashSpawner>();
+            trashSpawner = FindFirstObjectByType<TrashSpawner>();
         }
         
         if (trashSpawner != null)

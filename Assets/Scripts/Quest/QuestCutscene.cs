@@ -60,7 +60,7 @@ public class QuestCutscene : MonoBehaviour
         }
         
         // Disable player movement
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = FindFirstObjectByType<PlayerController>();
         if (player != null)
             player.enabled = false;
         

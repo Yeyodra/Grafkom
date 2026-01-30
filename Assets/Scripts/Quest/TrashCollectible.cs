@@ -24,7 +24,7 @@ public class TrashCollectible : MonoBehaviour
         col.radius = collectRadius;
         
         // Cari InventoryUI untuk animasi
-        inventoryUI = FindObjectOfType<InventoryUI>();
+        inventoryUI = FindFirstObjectByType<InventoryUI>();
         
         // Setup floating indicator jika belum ada
         if (floatingIndicator == null)
