@@ -37,6 +37,10 @@ public class QuestManager : MonoBehaviour
     [Header("Delivery State")]
     public bool carryingDeliveryItem = false;
     
+    [Header("Cutscene")]
+    public QuestCutscene questCutscene;
+
+    
     private Quest activeQuest;
     
     // Track all quest objects for show/hide
@@ -98,6 +102,9 @@ public void StartQuest(int index)
         
         // Show/hide quest objects based on active quest
         UpdateQuestObjectsVisibility();
+        
+        // Update NPC indicators
+        UpdateAllNPCIndicators();
         
         UpdateUI();
         Debug.Log($"Quest Started: {activeQuest.questName}");
@@ -183,7 +190,7 @@ public bool OnItemCollected(string questId)
         }
     }
     
-    void UpdateUI()
+void UpdateUI()
     {
         if (activeQuest == null) return;
         
@@ -202,9 +209,9 @@ public bool OnItemCollected(string questId)
             else if (activeQuest.questType == QuestType.Delivery)
             {
                 if (!carryingDeliveryItem)
-                    questProgressText.text = "Ambil paket di Rumah Sakit";
+                    questProgressText.text = "Bicara dengan orang di Monas";
                 else
-                    questProgressText.text = "Antar ke Monas";
+                    questProgressText.text = "Kembali ke Monas dengan obat";
             }
         }
     }
@@ -247,5 +254,28 @@ public void RegisterQuestObject(string questId, GameObject obj)
             }
         }
     }
+
+public void TriggerDeliveryCutscene()
+    {
+        if (questCutscene != null && !questCutscene.IsPlaying)
+        {
+            questCutscene.PlayCutscene();
+        }
+        else
+        {
+            // No cutscene, just complete delivery
+            OnDeliverItem("delivery_medicine");
+        }
+    }
+    
+    public void UpdateAllNPCIndicators()
+    {
+        NPCDialogue[] npcs = FindObjectsOfType<NPCDialogue>();
+        foreach (var npc in npcs)
+        {
+            npc.UpdateIndicatorState();
+        }
+    }
+
 
 }
