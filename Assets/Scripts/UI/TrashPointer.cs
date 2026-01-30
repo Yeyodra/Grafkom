@@ -57,22 +57,18 @@ public class TrashPointer : MonoBehaviour
         arrowImage = arrow.AddComponent<RectTransform>();
         arrowImage.anchorMin = new Vector2(0.5f, 0.5f);
         arrowImage.anchorMax = new Vector2(0.5f, 0.5f);
-        arrowImage.sizeDelta = new Vector2(60, 60);
-        arrowImage.anchoredPosition = new Vector2(0, 150); // Offset from center
+        arrowImage.sizeDelta = new Vector2(80, 80);
+        arrowImage.anchoredPosition = new Vector2(0, 120); // Offset from center
         
-        // Add arrow visual (using Text as simple arrow)
-        Text arrowText = arrow.AddComponent<Text>();
-        arrowText.text = "^"; // Simple arrow character
-        arrowText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        arrowText.fontSize = 72;
-        arrowText.fontStyle = FontStyle.Bold;
-        arrowText.alignment = TextAnchor.MiddleCenter;
-        arrowText.color = arrowColor;
+        // Create arrow image with procedural triangle texture
+        Image arrowImg = arrow.AddComponent<Image>();
+        arrowImg.sprite = CreateArrowSprite();
+        arrowImg.color = arrowColor;
         
-        // Add outline for visibility
-        Outline outline = arrow.AddComponent<Outline>();
-        outline.effectColor = Color.black;
-        outline.effectDistance = new Vector2(2, 2);
+        // Add outline effect using shadow
+        Shadow shadow = arrow.AddComponent<Shadow>();
+        shadow.effectColor = Color.black;
+        shadow.effectDistance = new Vector2(3, -3);
         
         // Create distance text
         GameObject distObj = new GameObject("DistanceText");
@@ -177,7 +173,7 @@ public class TrashPointer : MonoBehaviour
         float distance = dirToTarget.magnitude;
         if (distanceText != null)
         {
-            distanceText.text = $"{distance:F0}m";
+            distanceText.text = $"Sampah: {distance:F0}m";
         }
         
         // Pulse effect
@@ -185,15 +181,15 @@ public class TrashPointer : MonoBehaviour
         arrowImage.localScale = Vector3.one * pulse;
         
         // Change color based on distance (closer = more green)
-        Text arrowText = arrowImage.GetComponent<Text>();
-        if (arrowText != null)
+        Image arrowImg = arrowImage.GetComponent<Image>();
+        if (arrowImg != null)
         {
             if (distance < 10f)
-                arrowText.color = Color.green;
+                arrowImg.color = Color.green;
             else if (distance < 25f)
-                arrowText.color = Color.yellow;
+                arrowImg.color = Color.yellow;
             else
-                arrowText.color = new Color(1f, 0.5f, 0f); // Orange
+                arrowImg.color = new Color(1f, 0.5f, 0f); // Orange
         }
     }
     
@@ -211,5 +207,42 @@ public class TrashPointer : MonoBehaviour
             arrowImage.gameObject.SetActive(false);
         if (distanceText != null)
             distanceText.gameObject.SetActive(false);
+    }
+    
+    Sprite CreateArrowSprite()
+    {
+        // Create a simple arrow texture procedurally
+        int size = 64;
+        Texture2D tex = new Texture2D(size, size);
+        Color transparent = new Color(0, 0, 0, 0);
+        
+        // Fill with transparent
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                tex.SetPixel(x, y, transparent);
+            }
+        }
+        
+        // Draw triangle pointing up
+        int centerX = size / 2;
+        for (int y = 0; y < size; y++)
+        {
+            // Width of triangle at this height (wider at bottom)
+            float progress = (float)y / size;
+            int halfWidth = (int)((1f - progress) * (size / 2) * 0.8f);
+            
+            for (int x = centerX - halfWidth; x <= centerX + halfWidth; x++)
+            {
+                if (x >= 0 && x < size)
+                {
+                    tex.SetPixel(x, y, Color.white);
+                }
+            }
+        }
+        
+        tex.Apply();
+        return Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
     }
 }
