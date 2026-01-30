@@ -235,7 +235,7 @@ IEnumerator DisplayLine(DialogueLine line)
         while (timer < displayDuration)
         {
             if (Keyboard.current != null && 
-                (Keyboard.current.eKey.wasPressedThisFrame || Keyboard.current.spaceKey.wasPressedThisFrame))
+                (Keyboard.current.eKey.wasPressedThisFrame || Keyboard.current.enterKey.wasPressedThisFrame))
                 break;
             timer += Time.deltaTime;
             yield return null;

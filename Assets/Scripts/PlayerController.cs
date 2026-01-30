@@ -10,7 +10,13 @@ public class PlayerController : MonoBehaviour
     [Header("Flying Settings")]
     public float flySpeed = 15f;
     public float flyVerticalSpeed = 10f;
-    public float doubleTapTime = 0.3f; // Max time between taps to trigger fly
+    public float doubleTapTime = 0.3f;
+    
+    [Header("Jump Settings")]
+    public float jumpForce = 7f;
+    public float groundCheckDistance = 0.1f;
+    private bool isGrounded = false;
+ // Max time between taps to trigger fly
     
     private float rotationY = 0f;
     private bool isFlying = false;
@@ -79,7 +85,7 @@ public class PlayerController : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
     }
     
-    void HandleFlyToggle(Keyboard keyboard)
+void HandleFlyToggle(Keyboard keyboard)
     {
         if (keyboard.spaceKey.wasPressedThisFrame)
         {
@@ -89,13 +95,40 @@ public class PlayerController : MonoBehaviour
             if (timeSinceLastPress <= doubleTapTime && lastSpacePressTime > 0)
             {
                 isFlying = !isFlying;
-                Debug.Log(isFlying ? "🚀 FLY MODE ON! (Space=Up, Shift=Down)" : "🚶 FLY MODE OFF");
+                Debug.Log(isFlying ? "FLY MODE ON! (Space=Up, Shift=Down)" : "FLY MODE OFF");
                 lastSpacePressTime = -1f; // Reset to prevent triple-tap toggle
             }
             else
             {
                 lastSpacePressTime = Time.time;
+                
+                // Single tap = Jump (jika tidak flying dan di ground)
+                if (!isFlying && isGrounded && rb != null)
+                {
+                    rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                    isGrounded = false;
+                }
             }
         }
     }
+
+void FixedUpdate()
+    {
+        // Ground check menggunakan raycast dari bawah player
+        if (rb != null && !isFlying)
+        {
+            // Raycast dari posisi player ke bawah, jarak 1.1f (sedikit lebih dari setengah tinggi capsule)
+            isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f);
+        }
+    }
+    
+    void OnCollisionEnter(Collision collision)
+    {
+        // Fallback ground detection via collision
+        if (!isFlying)
+        {
+            isGrounded = true;
+        }
+    }
+
 }
