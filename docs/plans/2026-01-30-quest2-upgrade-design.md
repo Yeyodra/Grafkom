@@ -239,9 +239,10 @@ GarbageTruck
 ### Phase 5: NPC & Dialog
 
 #### Task 5.1: NPC Petugas Kebersihan
-- [ ] Duplicate existing NPC, rename "NPC_PetugasKebersihan"
-- [ ] Set warna hijau
-- [ ] Posisi dekat Hospital
+- [ ] **Duplicate dari NPC yang sudah ada** (copy NPC_StrangerHelper atau Player)
+- [ ] Rename ke "NPC_PetugasKebersihan"
+- [ ] Set warna hijau via AmongUsPlayer component
+- [ ] Posisi dekat Hospital, di samping mobil sampah
 - [ ] Setup NPCDialogue dengan opening dialog
 
 **Commit:** `feat(quest2): add NPC_PetugasKebersihan`
