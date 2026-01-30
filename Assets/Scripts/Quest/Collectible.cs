@@ -57,13 +57,34 @@ void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            if (QuestManager.Instance != null)
+            // Check if this is trash for Quest 2
+            if (questId == "collect_trash")
             {
-                bool collected = QuestManager.Instance.OnItemCollected(questId);
-                if (collected)
+                // Use inventory system
+                if (InventoryManager.Instance != null)
                 {
-                    Debug.Log($"Collected item for quest: {questId}");
+                    if (InventoryManager.Instance.IsFull())
+                    {
+                        Debug.Log("Inventory penuh! Buang sampah ke mobil dulu.");
+                        return;
+                    }
+                    
+                    InventoryManager.Instance.AddItem("trash");
+                    Debug.Log($"Collected trash - Inventory: {InventoryManager.Instance.GetCount()}/2");
                     Destroy(gameObject);
+                }
+            }
+            else
+            {
+                // Original behavior for other quests
+                if (QuestManager.Instance != null)
+                {
+                    bool collected = QuestManager.Instance.OnItemCollected(questId);
+                    if (collected)
+                    {
+                        Debug.Log($"Collected item for quest: {questId}");
+                        Destroy(gameObject);
+                    }
                 }
             }
         }

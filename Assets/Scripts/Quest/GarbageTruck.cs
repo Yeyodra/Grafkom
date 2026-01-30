@@ -31,7 +31,7 @@ public class GarbageTruck : MonoBehaviour
             
             BoxCollider col = dz.AddComponent<BoxCollider>();
             col.isTrigger = true;
-            col.size = new Vector3(5f, 3f, 4f);
+            col.size = new Vector3(8f, 4f, 8f); // Lebih besar agar mudah detect player
             
             dropZone = dz.transform;
         }

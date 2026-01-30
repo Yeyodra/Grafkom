@@ -86,9 +86,9 @@ public class InventoryUI : MonoBehaviour
         
         isSetup = true;
         
-        // Hide by default, show saat Quest 2 aktif
+        // Inventory selalu visible sebagai bagian dari game UI
         if (inventoryPanel != null)
-            inventoryPanel.SetActive(false);
+            inventoryPanel.SetActive(true);
     }
     
     GameObject CreateSlot(int index)
