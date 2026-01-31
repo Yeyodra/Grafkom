@@ -14,8 +14,12 @@ public class PlayerController : MonoBehaviour
     
     [Header("Jump Settings")]
     public float jumpForce = 7f;
-    public float groundCheckDistance = 0.1f;
+    public float groundCheckDistance = 0.3f;
+    public LayerMask groundLayer = ~0; // All layers by default
     private bool isGrounded = false;
+    
+    [Header("Collider Reference")]
+    private CapsuleCollider playerCollider;
  // Max time between taps to trigger fly
     
     private float rotationY = 0f;
@@ -27,6 +31,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         if (rb != null) rb.freezeRotation = true;
+        playerCollider = GetComponent<CapsuleCollider>();
         Cursor.lockState = CursorLockMode.Locked;
     }
     
@@ -74,7 +79,17 @@ public class PlayerController : MonoBehaviour
             }
         }
         
-        transform.position += move.normalized * currentSpeed * Time.deltaTime;
+        // Use physics-based movement when grounded, direct transform when flying
+        if (rb != null && !isFlying)
+        {
+            Vector3 velocity = move.normalized * currentSpeed;
+            velocity.y = rb.linearVelocity.y; // preserve gravity
+            rb.linearVelocity = velocity;
+        }
+        else
+        {
+            transform.position += move.normalized * currentSpeed * Time.deltaTime;
+        }
         
         // Mouse look
         float mouseX = mouse.delta.x.ReadValue() * mouseSensitivity;
@@ -117,8 +132,13 @@ void FixedUpdate()
         // Ground check menggunakan raycast dari bawah player
         if (rb != null && !isFlying)
         {
-            // Raycast dari posisi player ke bawah, jarak 1.1f (sedikit lebih dari setengah tinggi capsule)
-            isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f);
+            // Calculate ground check distance based on actual collider height
+            float checkDistance = groundCheckDistance;
+            if (playerCollider != null)
+            {
+                checkDistance = (playerCollider.height / 2f) + groundCheckDistance;
+            }
+            isGrounded = Physics.Raycast(transform.position, Vector3.down, checkDistance, groundLayer);
         }
     }
     
