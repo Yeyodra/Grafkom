@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 
 public enum QuestType { Delivery, Collection }
@@ -46,6 +47,9 @@ public class QuestManager : MonoBehaviour
     
     // Track all quest objects for show/hide
     private Dictionary<string, List<GameObject>> questObjects = new Dictionary<string, List<GameObject>>();
+    
+    // Cached NPC references for performance
+    private NPCDialogue[] cachedNPCs;
 
     
     void Awake()
@@ -62,6 +66,9 @@ public class QuestManager : MonoBehaviour
     
     void Start()
     {
+        // Cache NPC references at start for performance
+        cachedNPCs = FindObjectsByType<NPCDialogue>(FindObjectsSortMode.None);
+        
         // Setup default quests
         if (quests.Count == 0)
         {
@@ -165,8 +172,14 @@ public bool OnItemCollected(string questId)
                 questCompleteText.text = $"Quest Complete!\n{activeQuest.questName}";
         }
         
-        // Start next quest after delay
-        Invoke(nameof(StartNextQuest), 3f);
+        // Start next quest after delay using coroutine
+        StartCoroutine(StartNextQuestAfterDelay(3f));
+    }
+    
+    IEnumerator StartNextQuestAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        StartNextQuest();
     }
     
     void StartNextQuest()
@@ -272,10 +285,15 @@ public void TriggerDeliveryCutscene()
     
     public void UpdateAllNPCIndicators()
     {
-        NPCDialogue[] npcs = FindObjectsByType<NPCDialogue>(FindObjectsSortMode.None);
-        foreach (var npc in npcs)
+        // Use cached NPCs for performance
+        if (cachedNPCs == null || cachedNPCs.Length == 0)
         {
-            npc.UpdateIndicatorState();
+            cachedNPCs = FindObjectsByType<NPCDialogue>(FindObjectsSortMode.None);
+        }
+        
+        foreach (var npc in cachedNPCs)
+        {
+            if (npc != null) npc.UpdateIndicatorState();
         }
     }
 
@@ -307,14 +325,20 @@ public void TriggerDeliveryCutscene()
         if (quest2Cutscene != null && !quest2Cutscene.IsPlaying)
         {
             quest2Cutscene.PlayEndingCutscene();
-            // CompleteQuest will be called after cutscene via delay
-            Invoke(nameof(CompleteQuest2), 8f); // Delay to match cutscene duration
+            // CompleteQuest will be called after cutscene via coroutine
+            StartCoroutine(CompleteQuest2AfterDelay(8f));
         }
         else
         {
             // No cutscene, just complete
             CompleteQuest();
         }
+    }
+    
+    IEnumerator CompleteQuest2AfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        CompleteQuest2();
     }
     
     void CompleteQuest2()
