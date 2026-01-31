@@ -27,6 +27,14 @@ public class DialogueManager : MonoBehaviour
     private Queue<DialogueLine> dialogueQueue = new Queue<DialogueLine>();
     private bool isDisplaying = false;
     private System.Action onDialogueComplete;
+    private Font cachedFont;
+    
+    // Font names to try in order of preference
+    private static readonly string[] fontFallbacks = new string[]
+    {
+        "LegacyRuntime.ttf",
+        "Arial.ttf"
+    };
     
     [System.Serializable]
     public class DialogueLine
@@ -51,9 +59,24 @@ public class DialogueManager : MonoBehaviour
     
     void Start()
     {
+        CacheFont();
         SetupUI();
         HideDialogue();
         HidePrompt();
+    }
+    
+    void CacheFont()
+    {
+        foreach (string fontName in fontFallbacks)
+        {
+            cachedFont = Resources.GetBuiltinResource<Font>(fontName);
+            if (cachedFont != null)
+            {
+                Debug.Log($"DialogueManager: Using font '{fontName}'");
+                return;
+            }
+        }
+        Debug.LogWarning("DialogueManager: No built-in font found, UI text may not display correctly");
     }
     
     void SetupUI()
@@ -95,7 +118,7 @@ public class DialogueManager : MonoBehaviour
             nameRect.sizeDelta = new Vector2(-40, 30);
             
             npcNameText = nameObj.AddComponent<Text>();
-            npcNameText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            npcNameText.font = cachedFont;
             npcNameText.fontSize = 22;
             npcNameText.fontStyle = FontStyle.Bold;
             npcNameText.alignment = TextAnchor.MiddleLeft;
@@ -112,7 +135,7 @@ public class DialogueManager : MonoBehaviour
             textRect.sizeDelta = new Vector2(-40, -50);
             
             dialogueText = textObj.AddComponent<Text>();
-            dialogueText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            dialogueText.font = cachedFont;
             dialogueText.fontSize = 20;
             dialogueText.alignment = TextAnchor.MiddleCenter;
             dialogueText.color = Color.white;
@@ -139,7 +162,7 @@ public class DialogueManager : MonoBehaviour
             ptRect.anchoredPosition = Vector2.zero;
             
             promptText = promptTextObj.AddComponent<Text>();
-            promptText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            promptText.font = cachedFont;
             promptText.fontSize = 24;
             promptText.alignment = TextAnchor.MiddleCenter;
             promptText.color = Color.white;
