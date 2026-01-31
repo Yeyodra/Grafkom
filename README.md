@@ -151,19 +151,7 @@ git push
 ## Credits
 
 **Game Design & Development**
-- Yeyodra
-
-**Assets**
-- [List your asset sources here]
-
-**Special Thanks**
-- [Acknowledgements]
-
----
-
-## License
-
-[Your License Here]
+- Nazril,Kevin
 
 ---
 
