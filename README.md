@@ -18,16 +18,6 @@ A wholesome city adventure game where you help citizens and make the world a bet
 
 ---
 
-## Video
-
-<!-- Option 1: YouTube embed (replace YOUR_VIDEO_ID) -->
-[![Gameplay Video](docs/images/video-thumbnail.png)](https://youtube.com/watch?v=YOUR_VIDEO_ID)
-
-<!-- Option 2: Direct video file -->
-<!-- <video src="docs/videos/gameplay.mp4" controls width="100%"></video> -->
-
----
-
 ## About
 
 **Kind City** is a quest-based adventure game set in a vibrant urban environment. Play as a helpful citizen completing quests, interacting with NPCs, and making a positive impact on your community.
